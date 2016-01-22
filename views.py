@@ -22,13 +22,13 @@ def login_required(f):
 	return wrap
 
 #routes handlers
-@app.logout('/logout')
+@app.route('/logout')
 def logout():
 	session.clear()
 	flash("you were logged out")
 	return redirect(url_for('login'))
 
-@app.login('/login', methods=['POST','GET'])
+@app.route('/', methods=['POST','GET'])
 def login():
 	error = None
 	if request.method == 'POST':
