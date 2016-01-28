@@ -4,6 +4,7 @@ import sqlite3
 from functools import wraps
 from forms import AddTaskForm, RegisterForm, LoginForm
 from flask.ext.sqlalchemy import SQLAlchemy
+import datetime
 
 
 #config
@@ -41,6 +42,7 @@ def login():
 			user = User.query.filter_by(name=request.form['name']).first()
 			if user is not None and user.password == request.form["password"]:
 				session["logged_in"] = True
+				session["user_id"] = user.id
 				flash("welcome")
 				return redirect(url_for('tasks'))
 			else:
@@ -67,7 +69,9 @@ def new_task():
 	form = AddTaskForm(request.form)
 	if request.method == 'POST':
 		if form.validate_on_submit():
-			new_task = Task(form.name.data,form.due_date.data,form.priority.data,'1')
+			new_task = Task(form.name.data,\
+				form.due_date.data,form.priority.data,\
+				datetime.datetime.utcnow(),'1',session["user_id"])
 			db.session.add(new_task)
 			db.session.commit()
 			flash("New entry successfully added Thanks !")
@@ -98,7 +102,6 @@ def register():
 	error = None
 	form = RegisterForm(request.form)
 	if request.method == 'POST':
-		print form.validate_on_submit()
 		if form.validate_on_submit():
 			new_user = User(\
 				form.name.data,
