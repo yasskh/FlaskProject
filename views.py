@@ -43,6 +43,7 @@ def closed_tasks():
 
 #routes handlers
 @app.route('/logout/')
+@login_required
 def logout():
 	session.clear()
 	flash("you were logged out")
@@ -65,8 +66,6 @@ def login():
 		else:
 			error = "Both fields are required"
 	return render_template("login.html", form=form, error=error)
-
-
 
 @app.route('/tasks/') #show tasks
 @login_required
@@ -100,7 +99,7 @@ def complete(task_id):
 	({"status":"0"})
 	db.session.commit()
 	flash('The task is complete')
-	return redirect(url_for('tasks', error=error))
+	return redirect(url_for('tasks'))
 
 
 @app.route('/delete/<int:task_id>')
